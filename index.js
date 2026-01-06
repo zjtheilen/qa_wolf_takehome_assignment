@@ -10,7 +10,9 @@ async function sortHackerNewsArticles() {
   // go to Hacker News
   await page.goto("https://news.ycombinator.com/newest");
 
+  // number of posts to check
   const N = 100;
+  
   const timestamps = [];
 
   while (timestamps.length < N) {
@@ -37,6 +39,7 @@ async function sortHackerNewsArticles() {
   // check to see if posts are truly sorted by datetime
   let allOrdered = true;
   
+  console.log(`Item 0: ${new Date(timestamps[0] * 1000).toISOString()}`);
   for (let i = 1; i < timestamps.length; i++) {
     console.log(`Item ${i}: ${new Date(timestamps[i] * 1000).toISOString()}`);
     if (timestamps[i - 1] < timestamps[i]) {
