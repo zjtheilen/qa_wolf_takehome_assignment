@@ -2,7 +2,7 @@
 const { chromium } = require("playwright");
 
 async function sortHackerNewsArticles() {
-  // launch browser
+  // launch browser -> leave headless false for demo
   const browser = await chromium.launch({ headless: false });
   const context = await browser.newContext();
   const page = await context.newPage();
@@ -26,7 +26,7 @@ async function sortHackerNewsArticles() {
 
     // check if there is a "more" link 
     const moreLink = await page.$("a.morelink");
-    if (timestamps.length < 100 && moreLink) {
+    if (timestamps.length < N && moreLink) {
       await moreLink.click();
       await page.waitForLoadState("domcontentloaded");
     } else {
