@@ -15,58 +15,56 @@ function getTimeStampedFilename() {
     return `hn_sort_report_${safeTimestamp}.html`;
 }
 
-function generateHtmlReport({ timestamps, violations }) {
-    const rows = timestamps.map((ts, i) => {
-        const date = new Date(ts * 1000).toISOString();
-        const violation = violations.includes(i)
-        ? `<span style="color:red">❌</span>`
-        : `<span style="color:green">✅</span>`;
+function generateHtmlReport({ passed, totalChecked, timestamps, violations }) {
+  const violationSet = new Set(violations); // quick lookup for red ❌
 
-        return `<tr>
+  const rows = timestamps.map((ts, i) => {
+    const iso = new Date(ts * 1000).toISOString();
+    if (violationSet.has(i)) {
+      // find related index for tooltip
+      const relatedIndex = violations.find((v) => v === i ? i : null); // just i for now
+      return `<tr>
+        <td style="background: pink;">${i}</td>
+        <td style="background: pink;">${iso}</td>
+        <td style="background: pink;" title="Out of order">${'❌'}</td>
+      </tr>`;
+    } else {
+      return `<tr>
         <td>${i}</td>
-        <td>${date}</td>
-        <td style="text-align:center">${violation}</td>
-        </tr>`;
-    }).join("");
+        <td>${iso}</td>
+        <td title="Out of order">${'✅'}</td>
+      </tr>`;
+    }
+  }).join("");
 
-    return `
-        <!DOCTYPE html>
-        <html>
-        <head>
-        <meta charset="UTF-8" />
+  return `
+    <html>
+      <head>
         <title>Hacker News Sort Validation</title>
         <style>
-            body { font-family: Arial, sans-serif; padding: 20px; }
-            table { border-collapse: collapse; width: 100%; }
-            th, td { border: 1px solid #ddd; padding: 8px; }
-            th { background: #f4f4f4; }
+          table { border-collapse: collapse; width: 100%; }
+          th, td { border: 1px solid black; padding: 5px; text-align: left; }
+          th { background-color: #f2f2f2; }
+          td { cursor: default; }
         </style>
-        </head>
-        <body>
+      </head>
+      <body>
         <h1>Hacker News Sort Validation</h1>
-        <p><strong>Checked:</strong> ${timestamps.length} articles</p>
-        <p><strong>Status:</strong> ${
-            violations.length === 0
-            ? '<span style="color:green">PASS</span>'
-            : '<span style="color:red">FAIL</span>'
-        }</p>
-
+        <p>Checked: ${totalChecked} articles</p>
+        <p>Status: ${passed ? "PASS ✅" : "FAIL ❌"}</p>
         <table>
-            <thead>
-            <tr>
-                <th>Index</th>
-                <th>Published At</th>
-                <th>Order OK</th>
-            </tr>
-            </thead>
-            <tbody>
-            ${rows}
-            </tbody>
+          <tr>
+            <th>Index</th>
+            <th>Published At</th>
+            <th>Order OK</th>
+          </tr>
+          ${rows}
         </table>
-        </body>
-        </html>
-    `;
+      </body>
+    </html>
+  `;
 }
+
 
 function saveReport(html) {
     const reportsDir = ensureReportsDir();
