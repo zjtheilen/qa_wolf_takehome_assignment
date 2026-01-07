@@ -1,6 +1,6 @@
 // EDIT THIS FILE TO COMPLETE ASSIGNMENT QUESTION 1
 const { chromium } = require("playwright");
-const { generateHtmlReport } = require("./reporter");
+const { generateHtmlReport, saveReport } = require("./reporter");
 
 
 async function sortHackerNewsArticles() {
@@ -63,6 +63,11 @@ async function sortHackerNewsArticles() {
     }
   }
 
+  const htmlReport = generateHtmlReport({
+    timestamps,
+    violations
+  });
+
   if (allOrdered) {
     console.log("✅ All posts are sorted from newest -> oldest in order");
   } else {
@@ -76,6 +81,9 @@ async function sortHackerNewsArticles() {
     timestamps,
     violations
   });
+
+  const reportPath = saveReport(htmlReport);
+  console.log(`📄 HTML report generated: ${reportPath}`);
 
   await browser.close();
 }
