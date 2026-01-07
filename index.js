@@ -17,6 +17,7 @@ async function sortHackerNewsArticles() {
   
   const timestamps = [];
 
+  // collect N amount of post times
   while (timestamps.length < N) {
     const ageSpans = await page.$$("span.age");
     for (let i = 0; i < ageSpans.length && timestamps.length < N; i++) {
