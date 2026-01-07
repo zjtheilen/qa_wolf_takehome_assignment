@@ -1,5 +1,7 @@
 // EDIT THIS FILE TO COMPLETE ASSIGNMENT QUESTION 1
 const { chromium } = require("playwright");
+const { generateHtmlReport } = require("./reporter");
+
 
 async function sortHackerNewsArticles() {
   // launch browser -> leave headless false for demo
@@ -38,6 +40,7 @@ async function sortHackerNewsArticles() {
 
   // check to see if posts are truly sorted by datetime
   let allOrdered = true;
+  const violations = [];
   
   console.log(`Item 0: ${new Date(timestamps[0] * 1000).toISOString()}`);
   for (let i = 1; i < timestamps.length; i++) {
@@ -50,6 +53,11 @@ async function sortHackerNewsArticles() {
           timestamps[i] * 1000
         ).toISOString()})`
       );
+      violations.push({
+        index: i,
+        previous: timestamps[i - 1],
+        current: timestamps[i]
+      });
       allOrdered = false;
     }
   }
@@ -59,6 +67,14 @@ async function sortHackerNewsArticles() {
   } else {
     console.log("❌ Some posts are out of order")
   }
+
+  // generate report before closing browser
+  generateHtmlReport({
+    passed: allOrdered,
+    totalChecked: timestamps.length,
+    timestamps,
+    violations
+  });
 
   await browser.close();
 }
