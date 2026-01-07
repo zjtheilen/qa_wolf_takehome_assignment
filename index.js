@@ -2,7 +2,6 @@
 const { chromium } = require("playwright");
 const { generateHtmlReport, saveReport } = require("./reporter");
 
-
 async function sortHackerNewsArticles() {
   // launch browser -> leave headless false for demo
   const browser = await chromium.launch({ headless: false });
@@ -14,7 +13,6 @@ async function sortHackerNewsArticles() {
 
   // number of posts to check
   const N = 100;
-  
   const timestamps = [];
 
   // collect N amount of post times
@@ -26,6 +24,9 @@ async function sortHackerNewsArticles() {
       const unixSeconds = Number(title.split(" ")[1]);
       timestamps.push(unixSeconds);
     }
+
+    // force a failure for testing purposes
+    // timestamps[25] = timestamps[90];
 
     // check if there is a "more" link 
     const moreLink = await page.$("a.morelink");
@@ -42,7 +43,7 @@ async function sortHackerNewsArticles() {
   // check to see if posts are truly sorted by datetime
   let allOrdered = true;
   const violations = [];
-  
+
   console.log(`Item 0: ${new Date(timestamps[0] * 1000).toISOString()}`);
   for (let i = 1; i < timestamps.length; i++) {
     console.log(`Item ${i}: ${new Date(timestamps[i] * 1000).toISOString()}`);
@@ -54,28 +55,15 @@ async function sortHackerNewsArticles() {
           timestamps[i] * 1000
         ).toISOString()})`
       );
-      violations.push({
-        index: i,
-        previous: timestamps[i - 1],
-        current: timestamps[i]
-      });
+
+      // push both indices so both rows show ❌
+      violations.push(i - 1, i);
       allOrdered = false;
     }
   }
 
-  const htmlReport = generateHtmlReport({
-    timestamps,
-    violations
-  });
-
-  if (allOrdered) {
-    console.log("✅ All posts are sorted from newest -> oldest in order");
-  } else {
-    console.log("❌ Some posts are out of order")
-  }
-
   // generate report before closing browser
-  generateHtmlReport({
+  const htmlReport = generateHtmlReport({
     passed: allOrdered,
     totalChecked: timestamps.length,
     timestamps,
@@ -84,6 +72,12 @@ async function sortHackerNewsArticles() {
 
   const reportPath = saveReport(htmlReport);
   console.log(`📄 HTML report generated: ${reportPath}`);
+
+  if (allOrdered) {
+    console.log("✅ All posts are sorted from newest -> oldest in order");
+  } else {
+    console.log("❌ Some posts are out of order");
+  }
 
   await browser.close();
 }
