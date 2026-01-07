@@ -57,7 +57,15 @@ async function sortHackerNewsArticles() {
       );
 
       // push both indices so both rows show ❌
-      violations.push(i - 1, i);
+      violations.push({
+        index: i - 1,
+        relatedIndex: i
+      });
+      violations.push({
+        index: i,
+        relatedIndex: i - 1
+      });
+
       allOrdered = false;
     }
   }

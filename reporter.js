@@ -16,17 +16,19 @@ function getTimeStampedFilename() {
 }
 
 function generateHtmlReport({ passed, totalChecked, timestamps, violations }) {
-  const violationSet = new Set(violations); // quick lookup for red ❌
+  const violationSet = new Set(violations.map(v => v.index)); // only indices
 
   const rows = timestamps.map((ts, i) => {
     const iso = new Date(ts * 1000).toISOString();
     if (violationSet.has(i)) {
       // find related index for tooltip
-      const relatedIndex = violations.find((v) => v === i ? i : null); // just i for now
+      const violationObj = violations.find(v => v.index === i);
+      const relatedIndex = violationObj ? violationObj.relatedIndex : null;
+
       return `<tr>
         <td style="background: pink;">${i}</td>
         <td style="background: pink;">${iso}</td>
-        <td style="background: pink;" title="Out of order">${'❌'}</td>
+        <td style="background: pink;" title="Out of order (check related post index: ${relatedIndex})">${'❌'}</td>
       </tr>`;
     } else {
       return `<tr>
