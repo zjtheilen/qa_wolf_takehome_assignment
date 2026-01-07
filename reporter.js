@@ -32,7 +32,7 @@ function generateHtmlReport({ passed, totalChecked, timestamps, violations }) {
       return `<tr>
         <td>${i}</td>
         <td>${iso}</td>
-        <td title="Out of order">${'✅'}</td>
+        <td>${'✅'}</td>
       </tr>`;
     }
   }).join("");
