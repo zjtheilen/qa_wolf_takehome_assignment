@@ -19,6 +19,18 @@ function ensureReportsDir() {
 // create descriptive filename for report
 function getTimeStampedFilename() {
     const now = new Date();
+
+    /* regex explained:     /[:.]/g
+        / ... /             Regex literal
+        [:]                 Match a colon character
+        .                   Match a literal period character (dot)
+        [:.]                Match character class (either `:` or `.`)    
+        g                   Global flag, match all occurrences
+        
+        In plain english this translates as "match all occurrences of `:` and `.`"
+    */
+    // replace all instances of `:` or `.` with `-` in the timestamp string,
+    // and return filename
     const safeTimestamp = now.toISOString().replace(/[:.]/g, "-");
     return `hn_sort_report_${safeTimestamp}.html`;
 }
@@ -37,7 +49,12 @@ function generateHtmlReport({ passed, totalChecked, timestamps, titles, violatio
         const iso = new Date(ts * 1000).toISOString();
         const title = titles[i];
 
-        // if there is a violation, style the row as such, otherwise build unstyled rows
+        // if there is a violation, style the row as warning, otherwise build unstyled rows
+        // each row contains:
+        //  * index
+        //  * timestamp
+        //  * pass/fail indicator with tooltip for failures
+        //  * title of the article in question
         if (violationSet.has(i)) {
             const relatedIndex = violations.find(v => v.index === i)?.relatedIndex ?? "?";
             return `<tr>
@@ -57,19 +74,20 @@ function generateHtmlReport({ passed, totalChecked, timestamps, titles, violatio
     }).join("");
 
     // Build and return the entire report, including title, summary, 
-    // and results for each article using the above template for each row
+    // and total checked, and general pass/fail message.
+    // use rows variable from above to incorporate results table
     return `
         <html>
         <head>
             <title>Hacker News Sort Validation</title>
             <style>
-            table { border-collapse: collapse; width: 100%; }
+            table { border-collapse: collapse; width: fit-content; margin: auto; }
             th, td { border: 1px solid black; padding: 5px; text-align: left; }
             th { background-color: #f2f2f2; }
             td { cursor: default; }
             </style>
         </head>
-        <body>
+        <body style="width: fit-content; margin: auto;">
             <h1>Hacker News Sort Validation</h1>
             <p>Checked: ${totalChecked} articles</p>
             <p>Status: ${passed ? "PASS ✅" : "FAIL ❌"}</p>

@@ -9,7 +9,7 @@ const { chromium } = require("playwright");
 const { generateHtmlReport, saveReport } = require("./reporter");
 
 async function sortHackerNewsArticles() {
-    // launch browser -> leave headless false for demo
+    // Launch browser (headless set to false for demo visibility)
     const browser = await chromium.launch({ headless: false });
     const context = await browser.newContext();
     const page = await context.newPage();
@@ -31,14 +31,14 @@ async function sortHackerNewsArticles() {
     // array to collect scraped metadata
     const items = [];
 
-    // scrape until 100 articles have been collected
+    // scrape until N(100) articles have been collected
     while (items.length < N) {
         const ageSpans = await page.$$("span.age");
 
         for (let i = 0; i < ageSpans.length && items.length < N; i++) {
             const ageSpan = ageSpans[i];
 
-            // Locate the title element from the span.age and separate the UNIX time from it
+            // Extract Unix timestamp from the span.age `title` attribute
             const titleAttr = await ageSpan.getAttribute("title");
             if (!titleAttr) continue;
 
@@ -52,7 +52,7 @@ async function sortHackerNewsArticles() {
                 return link ? link.textContent : "Unknown title";
             });
 
-            // collect array of timestamps/titles
+            // add indices/timestamps/titles to array
             items.push({
                 index: items.length,
                 timestamp: unixSeconds,
@@ -64,8 +64,8 @@ async function sortHackerNewsArticles() {
         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         ~~~~~~~~~ 4. Pagination ~~~~~~~~~~~
         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-        if we don't have 100 articles by the end of the page
-        see if there is a more button and load the next page
+        If we don't have 100 articles by the end of the page,
+        check for a "More" link and load the next page
         */
 
         const moreLink = await page.$("a.morelink");
@@ -82,11 +82,11 @@ async function sortHackerNewsArticles() {
 
     /* 
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    ~~~~~~~ 5. Force Violation ~~~~~~~~
-    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ 
-    force failure for testing purposes
+    ~~~~~~~ 5. Force Violation ~~~~~~~~~
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    Used only to demonstrate failure handling and reporting
     */
-    // items[50] = items[20];
+    items[50] = items[20];
 
     /* 
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -94,14 +94,17 @@ async function sortHackerNewsArticles() {
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ 
     check to see if posts are truly sorted by datetime
     */
+
+    // assume posts are in order before check, create an array to collect violations
     let allOrdered = true;
     const violations = [];
+
     console.log(`Item 0: ${new Date(items[0].timestamp * 1000).toISOString()} - ${items[0].title}`);
     for (let i = 1; i < items.length; i++) {
         console.log(`Item ${i}: ${new Date(items[i].timestamp * 1000).toISOString()} - ${items[i].title}`);
 
-        // if the current timestamp is newer than the one above it, a violation is logged to console
-        // listing both indices
+        // If a newer timestamp appears below an older one,
+        // record a sorting violation for both affected indices
         if (items[i - 1].timestamp < items[i].timestamp) {
             console.log(
                 `❌ Order violation at index ${i - 1} (${new Date(
@@ -111,7 +114,7 @@ async function sortHackerNewsArticles() {
                 ).toISOString()})`
             );
 
-            // collect violations metadata in separate array
+            // collect violations metadata in the array
             violations.push({ index: i - 1, relatedIndex: i });
             violations.push({ index: i, relatedIndex: i - 1 });
 
@@ -135,9 +138,9 @@ async function sortHackerNewsArticles() {
 
     // save report to disk and return filepath
     const reportPath = saveReport(htmlReport);
-    console.log(`📄 HTML report generated: ${reportPath}`);
 
     // log message to console for test result
+    console.log(`📄 HTML report generated: ${reportPath}`);
     if (allOrdered) {
         console.log("✅ All posts are sorted from newest -> oldest in order");
     } else {
