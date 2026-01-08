@@ -77,6 +77,9 @@ async function sortHackerNewsArticles() {
         }
     }
 
+    // log to console how many article metadata sets were collected
+    console.log(`Collected ${items.length} items`);
+
     /* 
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     ~~~~~~~ 5. Force Violation ~~~~~~~~
@@ -84,9 +87,6 @@ async function sortHackerNewsArticles() {
     force failure for testing purposes
     */
     // items[50] = items[20];
-
-    // log to console how many article metadata sets were collected
-    console.log(`Collected ${items.length} items`);
 
     /* 
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
