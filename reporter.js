@@ -5,8 +5,9 @@ const path = require("path");
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ~~~~~~~ 1. DIR/FILE MNGMT ~~~~~~~~~
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ 
+check to see if dir exists, creates one if not, returns directory
 */
-// check to see if a /reports directory exists, and creates one if not, returns directory
+
 function ensureReportsDir() {
     const reportsDir = path.join(__dirname, "reports");
     if (!fs.existsSync(reportsDir)) {
@@ -91,8 +92,8 @@ function generateHtmlReport({ passed, totalChecked, timestamps, titles, violatio
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ~~~~~~~ 3. Saving Report ~~~~~~~~~~
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ 
+save report to disk and return path
 */
-// save report to disk and return path
 function saveReport(html) {
     const reportsDir = ensureReportsDir();
     const filename = getTimeStampedFilename();
