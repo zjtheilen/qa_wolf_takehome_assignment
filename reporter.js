@@ -15,26 +15,27 @@ function getTimeStampedFilename() {
     return `hn_sort_report_${safeTimestamp}.html`;
 }
 
-function generateHtmlReport({ passed, totalChecked, timestamps, violations }) {
-  const violationSet = new Set(violations.map(v => v.index)); // only indices
+function generateHtmlReport({ passed, totalChecked, timestamps, titles, violations }) {
+  const violationSet = new Set(violations.map(v => v.index));
 
   const rows = timestamps.map((ts, i) => {
     const iso = new Date(ts * 1000).toISOString();
-    if (violationSet.has(i)) {
-      // find related index for tooltip
-      const violationObj = violations.find(v => v.index === i);
-      const relatedIndex = violationObj ? violationObj.relatedIndex : null;
+    const title = titles[i];
 
+    if (violationSet.has(i)) {
+      const relatedIndex = violations.find(v => v.index === i)?.relatedIndex ?? "?";
       return `<tr>
         <td style="background: pink;">${i}</td>
         <td style="background: pink;">${iso}</td>
-        <td style="background: pink;" title="Out of order (check related post index: ${relatedIndex})">${'❌'}</td>
+        <td style="background: pink;" title="Out of order with index ${relatedIndex}">❌</td>
+        <td style="background: pink;">${title}</td>
       </tr>`;
     } else {
       return `<tr>
         <td>${i}</td>
         <td>${iso}</td>
-        <td>${'✅'}</td>
+        <td>✅</td>
+        <td>${title}</td>
       </tr>`;
     }
   }).join("");
@@ -59,6 +60,7 @@ function generateHtmlReport({ passed, totalChecked, timestamps, violations }) {
             <th>Index</th>
             <th>Published At</th>
             <th>Order OK</th>
+            <th>Title</th>
           </tr>
           ${rows}
         </table>
@@ -66,7 +68,6 @@ function generateHtmlReport({ passed, totalChecked, timestamps, violations }) {
     </html>
   `;
 }
-
 
 function saveReport(html) {
     const reportsDir = ensureReportsDir();
