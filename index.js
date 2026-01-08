@@ -1,4 +1,10 @@
 // EDIT THIS FILE TO COMPLETE ASSIGNMENT QUESTION 1
+
+/* 
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~ 1. LAUNCHING PLAYWRIGHT ~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ 
+*/
 const { chromium } = require("playwright");
 const { generateHtmlReport, saveReport } = require("./reporter");
 
@@ -7,10 +13,22 @@ async function sortHackerNewsArticles() {
     const browser = await chromium.launch({ headless: false });
     const context = await browser.newContext();
     const page = await context.newPage();
+    
 
+    /* 
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ~~~~ 2. NAVIGATE TO HACKER NEWS~~~~
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ 
+    */
     // go to Hacker News
     await page.goto("https://news.ycombinator.com/newest");
 
+
+    /* 
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ~~~~~~ 3. Scraping Articles ~~~~~~~
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ 
+    */
     // number of posts to check
     const N = 100;
     const items = [];
@@ -55,12 +73,24 @@ async function sortHackerNewsArticles() {
         }
     }
 
+
+    /* 
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ~~~~~~~ 4. Force Violation ~~~~~~~~
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ 
+    */
     // force failure for testing purposes
     items[50] = items[20];
 
     // log to console how many article metadata sets were collected
     console.log(`Collected ${items.length} items`);
 
+
+    /* 
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ~~~~~~ 5. Order Validation ~~~~~~~~
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ 
+    */
     // check to see if posts are truly sorted by datetime
     let allOrdered = true;
     const violations = [];
@@ -87,7 +117,13 @@ async function sortHackerNewsArticles() {
             allOrdered = false;
         }
     }
+    
 
+    /* 
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ~~~~~~ 6. Generate Report ~~~~~~~~~
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ 
+    */
     // generate report before closing browser
     const htmlReport = generateHtmlReport({
         passed: allOrdered,

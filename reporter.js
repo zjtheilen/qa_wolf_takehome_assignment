@@ -1,6 +1,11 @@
 const fs = require("fs");
 const path = require("path");
 
+/* 
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~ 1. DIR/FILE MNGMT ~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ 
+*/
 // check to see if a /reports directory exists, and creates one if not, returns directory
 function ensureReportsDir() {
     const reportsDir = path.join(__dirname, "reports");
@@ -21,6 +26,12 @@ function getTimeStampedFilename() {
 function generateHtmlReport({ passed, totalChecked, timestamps, titles, violations }) {
     const violationSet = new Set(violations.map(v => v.index));
 
+    
+    /* 
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ~~~~~~~ 2. Generate Table ~~~~~~~~~
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ 
+    */
     // build template for passing / failing rows in report
     const rows = timestamps.map((ts, i) => {
         const iso = new Date(ts * 1000).toISOString();
@@ -76,7 +87,12 @@ function generateHtmlReport({ passed, totalChecked, timestamps, titles, violatio
     `;
 }
 
-// save report to disk
+/* 
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~ 3. Saving Report ~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ 
+*/
+// save report to disk and return path
 function saveReport(html) {
     const reportsDir = ensureReportsDir();
     const filename = getTimeStampedFilename();
