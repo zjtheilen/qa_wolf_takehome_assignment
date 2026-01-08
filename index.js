@@ -60,7 +60,6 @@ async function sortHackerNewsArticles() {
   let allOrdered = true;
   const violations = [];
   console.log(`Item 0: ${new Date(items[0].timestamp * 1000).toISOString()} - ${items[0].title}`);
-  // console.log(`Item 0: ${new Date(timestamps[0] * 1000).toISOString()}`);
   for (let i = 1; i < items.length; i++) {
     console.log(`Item ${i}: ${new Date(items[i].timestamp * 1000).toISOString()} - ${items[i].title}`);
     if (items[i - 1].timestamp < items[i].timestamp) {

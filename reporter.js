@@ -27,14 +27,14 @@ function generateHtmlReport({ passed, totalChecked, timestamps, titles, violatio
       return `<tr>
         <td style="background: pink;">${i}</td>
         <td style="background: pink;">${iso}</td>
-        <td style="background: pink;" title="Out of order with index ${relatedIndex}">❌</td>
+        <td style="background: pink; text-align: center;" title="Out of order with index ${relatedIndex}">❌</td>
         <td style="background: pink;">${title}</td>
       </tr>`;
     } else {
       return `<tr>
         <td>${i}</td>
         <td>${iso}</td>
-        <td>✅</td>
+        <td style="text-align: center;">✅</td>
         <td>${title}</td>
       </tr>`;
     }
