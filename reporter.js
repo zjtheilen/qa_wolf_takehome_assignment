@@ -27,7 +27,6 @@ function getTimeStampedFilename() {
 function generateHtmlReport({ passed, totalChecked, timestamps, titles, violations }) {
     const violationSet = new Set(violations.map(v => v.index));
 
-    
     /* 
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     ~~~~~~~ 2. Generate Table ~~~~~~~~~
