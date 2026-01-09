@@ -86,7 +86,7 @@ async function sortHackerNewsArticles() {
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     Used only to demonstrate failure handling and reporting
     */
-    items[50] = items[20];
+    // items[50] = items[20];
 
     /* 
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
